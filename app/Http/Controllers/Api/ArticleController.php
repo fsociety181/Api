@@ -7,36 +7,34 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidArticleRequest;
 use Illuminate\Http\Request;
 use App\Models\Article;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ArticleResource;
 
 class ArticleController extends ApiController
 {
 
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index()
     {
         $articles = Article::all();
 
         if (is_null($articles)) {
-            return $this->sendError($articles, 'Error received articles', 400);
+            return $this->sendError($articles, 400);
         }
 
-        return $this->sendResponse($articles, 'Articles successfully received', 200);
+        return $this->sendResponse($articles, 200);
     }
 
-    public function show($id): \Illuminate\Http\JsonResponse
+    public function show($id)
     {
         $article = Article::findOrFail($id);
-//        getMedia('article_image')->first()->getUrl();
 
         if (is_null($article)) {
-            return $this->sendError('Article not found', $article, 404);
+            return $this->sendError($article, 404);
         }
-        $article->image = $article->getArticleImage();
 
-        return $this->sendResponse($article, 'Article successfully received', 200);
+        return  response(new ArticleResource($article), '200');
     }
 
-    public function create(ValidArticleRequest $request): \Illuminate\Http\JsonResponse
+    public function create(ValidArticleRequest $request)
     {
         $data = $request->validated();
         $article = Article::create($data);
@@ -46,21 +44,21 @@ class ArticleController extends ApiController
         }
 
         if (is_null($article)) {
-            return $this->sendError('Valid error', $article, 400);
+            return $this->sendError($article, 400);
         }
 
-        return $this->sendResponse($article, 'Article successfully create', 201);
+        return $this->sendResponse($article, 201);
     }
 
-    public function update(ValidArticleRequest $request, $id): \Illuminate\Http\JsonResponse
+    public function update(ValidArticleRequest $request, $id)
     {
-        $article = Article::firstWhere('id', $id)->update($request->all());
+        $article = Article::where('id', $id)->update($request->all());
 
         if (is_null($article)) {
-            return $this->sendError('Article not found', $article, 404);
+            return $this->sendError($article, 404);
         }
 
-        return $this->sendResponse($article, 'Article successfully updates', 202);
+        return $this->sendResponse($article, 202);
     }
 
     public function destroy($id)
@@ -68,9 +66,9 @@ class ArticleController extends ApiController
         $delete = Article::where('id', $id)->find($id)->delete($id);
 
         if (is_null($delete)) {
-            return $this->sendError('Article not found', $delete, 404);
+            return $this->sendError($delete, 404);
         }
 
-        return $this->sendResponse($delete, 'Article successfully deleted', 204);
+        return $this->sendResponse($delete, 204);
     }
 }
