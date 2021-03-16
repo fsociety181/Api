@@ -7,11 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidArticleRequest;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArticleController extends ApiController
 {
 
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $articles = Article::all();
 
@@ -22,19 +23,20 @@ class ArticleController extends ApiController
         return $this->sendResponse($articles, 'Articles successfully received', 200);
     }
 
-    public function show($id)
+    public function show($id): \Illuminate\Http\JsonResponse
     {
-        $article = Article::find($id);
+        $article = Article::findOrFail($id);
 //        getMedia('article_image')->first()->getUrl();
 
         if (is_null($article)) {
             return $this->sendError('Article not found', $article, 404);
         }
+        $article->image = $article->getArticleImage();
 
         return $this->sendResponse($article, 'Article successfully received', 200);
     }
 
-    public function create(ValidArticleRequest $request)
+    public function create(ValidArticleRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
         $article = Article::create($data);
@@ -50,9 +52,9 @@ class ArticleController extends ApiController
         return $this->sendResponse($article, 'Article successfully create', 201);
     }
 
-    public function update(ValidArticleRequest $request, $id)
+    public function update(ValidArticleRequest $request, $id): \Illuminate\Http\JsonResponse
     {
-        $article = Article::where('id', $id)->update($request->all());
+        $article = Article::firstWhere('id', $id)->update($request->all());
 
         if (is_null($article)) {
             return $this->sendError('Article not found', $article, 404);

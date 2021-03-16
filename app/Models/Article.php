@@ -15,7 +15,7 @@ class Article extends Model implements HasMedia
 
     protected $fillable = [
         'title',
-        'img',
+        'image',
         'text',
     ];
 
@@ -28,4 +28,9 @@ class Article extends Model implements HasMedia
         'created_at',
         'updated_at',
     ];
+
+    public function getArticleImage(): string
+    {
+        return $this->getFirstMediaUrl('article_image');
+    }
 }
