@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidArticleRequest;
 use Illuminate\Http\Request;
 use App\Models\Article;
-use App\Http\Resources\ArticleResource;
+use App\Http\Resources\ArticleResouce;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArticleController extends ApiController
 {
@@ -20,7 +21,7 @@ class ArticleController extends ApiController
             return $this->sendError($articles, 400);
         }
 
-        return $this->sendResponse($articles, 200);
+        return $this->sendResponse(ArticleResouce::collection($articles), 200);
     }
 
     public function show($id)
@@ -31,16 +32,16 @@ class ArticleController extends ApiController
             return $this->sendError($article, 404);
         }
 
-        return  response(new ArticleResource($article), '200');
+        return response(new ArticleResouce($article), '200');
     }
 
-    public function create(ValidArticleRequest $request)
+    public function store(ValidArticleRequest $request)
     {
         $data = $request->validated();
         $article = Article::create($data);
 
-        if ($request->hasFile('img')) {
-            $article->addMediaFromRequest('img')->toMediaCollection('article_image');
+        if ($request->hasFile('image')) {
+            $article->addMediaFromRequest('image')->toMediaCollection('article_image');
         }
 
         if (is_null($article)) {
@@ -52,7 +53,10 @@ class ArticleController extends ApiController
 
     public function update(ValidArticleRequest $request, $id)
     {
-        $article = Article::where('id', $id)->update($request->all());
+        $data = $request->validated();
+
+        $article = Article::findOrFail($id)
+        ->update($data);
 
         if (is_null($article)) {
             return $this->sendError($article, 404);

@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Auth\LoginUserController;
+use App\Http\Controllers\Auth\RegisterUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,19 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
+Route::post('register', [RegisterUserController::class, 'register']);
+Route::post('login', [LoginUserController::class, 'login']);
+
+Route::group(['middleware' => 'auth:api'], function () {
+
+    Route::apiResource('article', ArticleController::class);
 });
 
-Route::prefix('article')->group(function (){
 
-    Route::get('/', 'App\Http\Controllers\Api\ArticleController@index');
-    Route::get('/{article}', 'App\Http\Controllers\Api\ArticleController@show');
-    Route::get('delete/{article}', 'App\Http\Controllers\Api\ArticleController@destroy');
-
-    Route::post('/','App\Http\Controllers\Api\ArticleController@create');
-    Route::post('/{article}', 'App\Http\Controllers\Api\ArticleController@update');
-
-});
 
 

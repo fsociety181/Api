@@ -1,19 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ValidArticleRequest extends FormRequest
+class ValidUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -23,24 +21,26 @@ class ValidArticleRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'title' => [
+            'name' => [
                 'required',
-                'string',
-                'min:3',
                 'max:15',
+                'min:3',
             ],
-            'image' => [
-
-            ],
-            'text' => [
+            'email' => [
                 'required',
-                'string',
-                'max:3000',
+                'email',
+            ],
+            'password' => [
+                'min:8',
+                'required',
+            ],
+            'password_confirm' => [
+                'required',
+                'same:password',
             ],
         ];
-
     }
 }
