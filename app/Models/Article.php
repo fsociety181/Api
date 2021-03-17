@@ -33,4 +33,9 @@ class Article extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('article_image');
     }
+
+    public function comments()
+    {
+        return $this->belongsToMany(Comment::class);
+    }
 }

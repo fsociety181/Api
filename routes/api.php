@@ -21,7 +21,6 @@ Route::post('register', [RegisterUserController::class, 'register']);
 Route::post('login', [LoginUserController::class, 'login']);
 
 Route::group(['middleware' => 'auth:api'], function () {
-
     Route::apiResource('article', ArticleController::class);
 });
 
