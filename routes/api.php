@@ -20,9 +20,21 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [RegisterUserController::class, 'register']);
 Route::post('login', [LoginUserController::class, 'login']);
 
-Route::group(['middleware' => 'auth:api'], function () {
-    Route::apiResource('article', ArticleController::class);
-});
+Route::get('article/guest', [ArticleController::class, 'getArticle']);
+
+Route::group(
+    ['middleware' => ['permission:reading|like|writeComment', 'role:user|admin', 'auth:api']],
+    function () {
+        Route::post('comment', [\App\Http\Controllers\CommentController::class, 'store']);
+    }
+);
+
+Route::group(
+    ['middleware' => ['role:admin', 'auth:api']],
+    function () {
+        Route::apiResource('article', ArticleController::class);
+    }
+);
 
 
 

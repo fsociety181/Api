@@ -13,7 +13,7 @@ class LoginUserController extends ApiController
         if (\Auth::attempt($request->only('email', 'password'))) {
             $user = \Auth::user();
 
-            $token = $user->createToken('admin')->accessToken;
+            $token = $user->createToken('')->accessToken;
 
             return[
                 'token' => $token,

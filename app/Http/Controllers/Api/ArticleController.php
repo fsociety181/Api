@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
@@ -56,7 +57,7 @@ class ArticleController extends ApiController
         $data = $request->validated();
 
         $article = Article::findOrFail($id)
-        ->update($data);
+            ->update($data);
 
         if (is_null($article)) {
             return $this->sendError($article, 404);
@@ -74,5 +75,16 @@ class ArticleController extends ApiController
         }
 
         return $this->sendResponse($delete, 204);
+    }
+
+    public function getArticle()
+    {
+        $articles = Article::all();
+
+        if (is_null($articles)) {
+            return $this->sendError($articles, 400);
+        }
+
+        return $this->sendResponse(ArticleResouce::collection($articles), 200);
     }
 }

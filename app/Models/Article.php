@@ -15,7 +15,6 @@ class Article extends Model implements HasMedia
 
     protected $fillable = [
         'title',
-        'image',
         'text',
     ];
 
@@ -36,6 +35,11 @@ class Article extends Model implements HasMedia
 
     public function comments()
     {
-        return $this->belongsToMany(Comment::class);
+        return $this->belongsToMany(Comment::class, 'article_comment');
+    }
+
+    public function user()
+    {
+        return $this->belongsToMany(User::class, 'user_comment');
     }
 }
