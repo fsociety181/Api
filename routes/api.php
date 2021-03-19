@@ -51,7 +51,7 @@ Route::group(
     function () {
         Route::post('/', [ArticleController::class, 'store']);
 
-        Route::put('/', [ArticleController::class, 'update']);
+        Route::put('/{article}', [ArticleController::class, 'update']);
 
         Route::delete('/{article}', [ArticleController::class, 'destroy']);
     }
