@@ -26,10 +26,6 @@ class RegisterUserController extends ApiController
             return $this->sendError($user, 400);
         }
 
-        if ($user->hasRole('user')) {
-            return $this->sendResponse($user, 201);
-        } else {
-            return 'GG';
-        }
+        return $this->sendResponse($user, 201);
     }
 }

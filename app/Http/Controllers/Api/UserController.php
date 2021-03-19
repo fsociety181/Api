@@ -54,4 +54,11 @@ class UserController extends ApiController
 
         return $this->sendResponse($user, 202);
     }
+
+    public function logout()
+    {
+        $logout = Auth::user()->token()->revoke();
+
+        return $this->sendResponse($logout, 200);
+    }
 }
