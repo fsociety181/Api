@@ -31,7 +31,16 @@ Route::group(
 
         Route::patch('user', [\App\Http\Controllers\Api\UserController::class, 'updatePassword']);
 
+        Route::get('like/{article}', [\App\Http\Controllers\Api\LikeController::class, 'store']);
+
         Route::post('comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
+
+        Route::get(
+            'logout',
+            function () {
+                return Auth::user()->token()->revoke();
+            }
+        );
     }
 );
 

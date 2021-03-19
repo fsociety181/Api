@@ -38,8 +38,8 @@ class Article extends Model implements HasMedia
         return $this->belongsToMany(Comment::class, 'article_comment');
     }
 
-    public function user()
+    public function like()
     {
-        return $this->belongsToMany(User::class, 'user_comment');
+        return $this->hasMany(Like::class);
     }
 }

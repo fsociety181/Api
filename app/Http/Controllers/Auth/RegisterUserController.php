@@ -21,8 +21,6 @@ class RegisterUserController extends ApiController
 
         $user->assignRole('user');
         $user->givePermissionTo(['reading', 'like', 'WriteComment']);
-//        $user->givePermissionTo('like');
-//        $user->givePermissionTo('WriteComment');
 
         if (is_null($user)) {
             return $this->sendError($user, 400);
