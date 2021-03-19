@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Auth\LoginUserController;
 use App\Http\Controllers\Auth\RegisterUserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,7 +19,12 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [RegisterUserController::class, 'register']);
 Route::post('login', [LoginUserController::class, 'login']);
 
-Route::get('article/guest', [ArticleController::class, 'getArticle']);
+Route::prefix('articles')->group(
+    function () {
+        Route::get('/', [ArticleController::class, 'index']);
+        Route::get('/{article}', [ArticleController::class, 'show']);
+    }
+);
 
 Route::group(
     ['middleware' => ['permission:reading|like|writeComment', 'role:user|admin', 'auth:api']],
@@ -35,19 +39,21 @@ Route::group(
 
         Route::post('comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
 
-        Route::get(
-            'logout',
-            function () {
-                return Auth::user()->token()->revoke();
-            }
-        );
+        Route::get('logout', [\App\Http\Controllers\Api\UserController::class, 'logout']);
     }
 );
 
 Route::group(
-    ['middleware' => ['role:admin', 'auth:api']],
+    [
+        'middleware' => ['role:admin', 'auth:api'],
+        'prefix' => 'articles',
+    ],
     function () {
-        Route::apiResource('article', ArticleController::class);
+        Route::post('/', [ArticleController::class, 'store']);
+
+        Route::put('/', [ArticleController::class, 'update']);
+
+        Route::delete('/{article}', [ArticleController::class, 'destroy']);
     }
 );
 

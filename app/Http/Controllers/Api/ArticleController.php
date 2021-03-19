@@ -76,15 +76,4 @@ class ArticleController extends ApiController
 
         return $this->sendResponse($delete, 204);
     }
-
-    public function getArticle()
-    {
-        $articles = Article::all();
-
-        if (is_null($articles)) {
-            return $this->sendError($articles, 400);
-        }
-
-        return $this->sendResponse(ArticleResouce::collection($articles), 200);
-    }
 }
