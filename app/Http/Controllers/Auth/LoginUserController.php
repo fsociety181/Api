@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -15,10 +17,11 @@ class LoginUserController extends ApiController
 
             $token = $user->createToken('')->accessToken;
 
-            return[
+            return [
                 'token' => $token,
             ];
         }
+
 
         return $this->sendError('Unauthorize', 404);
     }

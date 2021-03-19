@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Api;
 
 use App\Models\Article;
 use App\Models\Comment;
@@ -38,10 +40,16 @@ class CommentController extends ApiController
         $user = User::findOrFail($request->get('user_id'));
         $comment = new Comment();
         $comment->text = $request->get('text');
+
         $comment->save();
+
         $article->comments()->attach($comment->id);
         $user->comment()->attach($comment->id);
 
-        return response($comment,200);
+        if (is_null($comment)) {
+            return $this->sendError($comment, 400);
+        }
+
+        return response($comment, 201);
     }
 }

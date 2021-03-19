@@ -25,7 +25,13 @@ Route::get('article/guest', [ArticleController::class, 'getArticle']);
 Route::group(
     ['middleware' => ['permission:reading|like|writeComment', 'role:user|admin', 'auth:api']],
     function () {
-        Route::post('comment', [\App\Http\Controllers\CommentController::class, 'store']);
+        Route::get('user', [\App\Http\Controllers\Api\UserController::class, 'index']);
+
+        Route::put('user', [\App\Http\Controllers\Api\UserController::class, 'updateInfo']);
+
+        Route::patch('user', [\App\Http\Controllers\Api\UserController::class, 'updatePassword']);
+
+        Route::post('comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
     }
 );
 
