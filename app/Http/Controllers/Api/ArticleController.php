@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
@@ -7,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidArticleRequest;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Http\Resources\ArticleResouce;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ArticleController extends ApiController
 {
@@ -16,49 +19,51 @@ class ArticleController extends ApiController
         $articles = Article::all();
 
         if (is_null($articles)) {
-            return $this->sendError($articles, 'Error received articles', 400);
+            return $this->sendError($articles, 400);
         }
 
-        return $this->sendResponse($articles, 'Articles successfully received', 200);
+        return $this->sendResponse(ArticleResouce::collection($articles), 200);
     }
 
     public function show($id)
     {
-        $article = Article::find($id);
-//        getMedia('article_image')->first()->getUrl();
+        $article = Article::findOrFail($id);
 
         if (is_null($article)) {
-            return $this->sendError('Article not found', $article, 404);
+            return $this->sendError($article, 404);
         }
 
-        return $this->sendResponse($article, 'Article successfully received', 200);
+        return response(new ArticleResouce($article), '200');
     }
 
-    public function create(ValidArticleRequest $request)
+    public function store(ValidArticleRequest $request)
     {
         $data = $request->validated();
         $article = Article::create($data);
 
-        if ($request->hasFile('img')) {
-            $article->addMediaFromRequest('img')->toMediaCollection('article_image');
+        if ($request->hasFile('image')) {
+            $article->addMediaFromRequest('image')->toMediaCollection('article_image');
         }
 
         if (is_null($article)) {
-            return $this->sendError('Valid error', $article, 400);
+            return $this->sendError($article, 400);
         }
 
-        return $this->sendResponse($article, 'Article successfully create', 201);
+        return $this->sendResponse($article, 201);
     }
 
     public function update(ValidArticleRequest $request, $id)
     {
-        $article = Article::where('id', $id)->update($request->all());
+        $data = $request->validated();
+
+        $article = Article::findOrFail($id)
+            ->update($data);
 
         if (is_null($article)) {
-            return $this->sendError('Article not found', $article, 404);
+            return $this->sendError($article, 404);
         }
 
-        return $this->sendResponse($article, 'Article successfully updates', 202);
+        return $this->sendResponse($article, 202);
     }
 
     public function destroy($id)
@@ -66,9 +71,20 @@ class ArticleController extends ApiController
         $delete = Article::where('id', $id)->find($id)->delete($id);
 
         if (is_null($delete)) {
-            return $this->sendError('Article not found', $delete, 404);
+            return $this->sendError($delete, 404);
         }
 
-        return $this->sendResponse($delete, 'Article successfully deleted', 204);
+        return $this->sendResponse($delete, 204);
+    }
+
+    public function getArticle()
+    {
+        $articles = Article::all();
+
+        if (is_null($articles)) {
+            return $this->sendError($articles, 400);
+        }
+
+        return $this->sendResponse(ArticleResouce::collection($articles), 200);
     }
 }

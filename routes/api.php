@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Auth\LoginUserController;
+use App\Http\Controllers\Auth\RegisterUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,19 +17,40 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('register', [RegisterUserController::class, 'register']);
+Route::post('login', [LoginUserController::class, 'login']);
 
-Route::prefix('article')->group(function (){
+Route::get('article/guest', [ArticleController::class, 'getArticle']);
 
-    Route::get('/', 'App\Http\Controllers\Api\ArticleController@index');
-    Route::get('/{article}', 'App\Http\Controllers\Api\ArticleController@show');
-    Route::get('delete/{article}', 'App\Http\Controllers\Api\ArticleController@destroy');
+Route::group(
+    ['middleware' => ['permission:reading|like|writeComment', 'role:user|admin', 'auth:api']],
+    function () {
+        Route::get('user', [\App\Http\Controllers\Api\UserController::class, 'index']);
 
-    Route::post('/','App\Http\Controllers\Api\ArticleController@create');
-    Route::post('/{article}', 'App\Http\Controllers\Api\ArticleController@update');
+        Route::put('user', [\App\Http\Controllers\Api\UserController::class, 'updateInfo']);
 
-});
+        Route::patch('user', [\App\Http\Controllers\Api\UserController::class, 'updatePassword']);
+
+        Route::get('like/{article}', [\App\Http\Controllers\Api\LikeController::class, 'store']);
+
+        Route::post('comment', [\App\Http\Controllers\Api\CommentController::class, 'store']);
+
+        Route::get(
+            'logout',
+            function () {
+                return Auth::user()->token()->revoke();
+            }
+        );
+    }
+);
+
+Route::group(
+    ['middleware' => ['role:admin', 'auth:api']],
+    function () {
+        Route::apiResource('article', ArticleController::class);
+    }
+);
+
+
 
 

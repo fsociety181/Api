@@ -6,22 +6,20 @@ use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
-    public function sendResponse($result, $message, $code)
+    public function sendResponse($result, $code)
     {
         $response = [
             'success' => true,
-            'message' => $message,
             'data' => $result
         ];
 
         return response()->json($response, $code);
     }
 
-    public function sendError($error, $errorMessage, $code)
+    public function sendError($errorMessage, $code)
     {
         $response = [
             'success' => false,
-            'message' => $error
         ];
 
         if (!empty($errorMessage)) {
